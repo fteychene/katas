@@ -1,4 +1,6 @@
 .gradle
-build
+kotlin/build
 .idea
 *.iml
+
+rust/target
