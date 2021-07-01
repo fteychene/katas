@@ -10,13 +10,13 @@ enum Direction {
 }
 
 #[derive(Clone, PartialEq, Debug)]
-struct Rover {
+pub struct Rover {
     position: Position,
     direction: Direction,
 }
 
 impl Rover {
-    fn new(position: Position, direction: Direction) -> Rover {
+    pub fn new(position: Position, direction: Direction) -> Rover {
         Rover {
             position,
             direction,
@@ -104,7 +104,7 @@ fn compute_command(rover: &Rover, command: Command, obstacles: &Vec<Position>) -
     } else { Ok(result) }
 }
 
-fn mars_rover(rover: &Rover, commands: &str, obstacles: &Vec<Position>) -> Result<Rover, (Rover, RoverError)> {
+pub fn mars_rover(rover: &Rover, commands: &str, obstacles: &Vec<Position>) -> Result<Rover, (Rover, RoverError)> {
     let commands = parse_commands(commands).map_err(|err| (rover.clone(), err))?;
     commands.into_iter()
         .fold(Ok(rover.clone()),
@@ -237,7 +237,7 @@ mod tests {
     }
 
     #[test]
-    fn compute_command_should_warp_at_the_endf_of_the_world() {
+    fn compute_command_should_warp_at_the_end_of_the_world() {
         let rover = Rover::new((255, 0), Direction::East);
         assert_eq!(compute_command(&rover, Command::Forward, &vec![]), Ok(Rover::new((0, 0), Direction::East)));
         let rover = Rover::new((0, 0), Direction::East);
@@ -271,6 +271,9 @@ mod tests {
     fn mars_rover_should_move_to_the_last_possible_step_before_collision() {
         let rover = Rover::new((0, 0), Direction::East);
         assert_eq!(mars_rover(&rover, "lfrfrbl", &vec![(1, 2)]),
-                   Err((Rover::new((1, 1), Direction::South), "Collision with obstacle in 1,2".to_string())))
+                   Err((Rover::new((1, 1), Direction::South), "Collision with obstacle in 1,2".to_string())));
+        let rover = Rover::new((0, 0), Direction::East);
+        assert_eq!(mars_rover(&rover, "lfrfrbl", &vec![(1, 1)]),
+                   Err((Rover::new((0, 1), Direction::East), "Collision with obstacle in 1,1".to_string())));
     }
 }
